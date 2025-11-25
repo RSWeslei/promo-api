@@ -1,0 +1,92 @@
+model Product {
+  id String @id @default(cuid()) @map("id")
+
+  name        String  @map("name")
+  brand       String? @map("brand")
+  description String? @map("description")
+
+  category    String? @map("category")
+  subcategory String? @map("subcategory")
+
+  sku           String? @unique @map("sku")
+  barcode       String? @unique @map("barcode")
+  manufacturer  String? @map("manufacturer")
+  originCountry String? @map("origin_country")
+
+  quantityLabel   String? @map("quantity_label")
+  packageQuantity Int?    @map("package_quantity")
+  packageUnit     String? @map("package_unit")
+  netWeight       Float?  @map("net_weight")
+  netWeightUnit   String? @map("net_weight_unit")
+  volume          Float?  @map("volume")
+  volumeUnit      String? @map("volume_unit")
+
+  // ESTES AQUI PRECISAM EXISTIR
+  width       Float? @map("width")
+  height      Float? @map("height")
+  length      Float? @map("length")
+  grossWeight Float? @map("gross_weight")
+
+  priceText String? @map("price")
+  priceMin  Float?  @map("price_min")
+  priceMax  Float?  @map("price_max")
+  priceAvg  Float?  @map("price_avg")
+
+  gpcCode        String? @map("gpc_code")
+  gpcDescription String? @map("gpc_description")
+
+  ncmCode            String? @map("ncm_code")
+  ncmDescription     String? @map("ncm_description")
+  ncmFullDescription String? @map("ncm_full_description")
+  ncmEx              String? @map("ncm_ex")
+
+  externalCategoryId       Int?    @map("external_category_id")
+  externalCategoryParentId Int?    @map("external_category_parent_id")
+  externalCategoryName     String? @map("external_category_name")
+
+  releaseDate DateTime? @map("release_date")
+
+  imageUrl         String? @map("image_url")
+  additionalImages Json?   @map("additional_images")
+  brandImageUrl    String? @map("brand_image_url")
+  barcodeImageUrl  String? @map("barcode_image_url")
+
+  ingredients String? @map("ingredients")
+  allergens   String? @map("allergens")
+
+  isVegan      Boolean? @map("is_vegan")
+  isVegetarian Boolean? @map("is_vegetarian")
+  isGlutenFree Boolean? @map("is_gluten_free")
+
+  tags Json? @map("tags")
+
+  source      String? @map("source")
+  externalId  String? @map("external_id")
+  externalUrl String? @map("external_url")
+
+  isActive Boolean @default(true) @map("is_active")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  images ProductImage[]
+
+  @@map("product")
+}
+
+model ProductImage {
+  id String @id @default(cuid()) @map("id")
+
+  product   Product @relation(fields: [productId], references: [id])
+  productId String  @map("product_id")
+
+  url       String  @map("url") // URL da imagem
+  type      String? @map("type") // "front", "ingredients", "nutrition", "extra", etc.
+  sortOrder Int?    @map("sort_order") // pra ordenar as imagens se quiser
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([productId], map: "product_image_product_id_idx")
+  @@map("product_image")
+}
