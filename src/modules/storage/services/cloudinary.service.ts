@@ -1,7 +1,8 @@
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common'
 import type { v2 as CloudinaryType } from 'cloudinary'
 
-import { UploadImageResponseDto } from '../dto/upload-image-response.dto'
+import { UploadImageResponseDto } from '@/modules/storage/dto/upload-image-response.dto'
+
 import { CLOUDINARY } from '../providers/cloudinary.provider'
 
 @Injectable()
@@ -13,7 +14,7 @@ export class CloudinaryService {
 
     async uploadImage(
         file: Express.Multer.File,
-        options?: { folder?: string; overwrite?: boolean },
+        options?: { folder?: string; overwrite?: boolean; publicId?: string },
     ): Promise<UploadImageResponseDto> {
         if (!file) {
             throw new InternalServerErrorException('File is required for upload')
@@ -24,7 +25,9 @@ export class CloudinaryService {
                 .upload_stream(
                     {
                         folder: options?.folder,
+                        public_id: options?.publicId,
                         overwrite: options?.overwrite ?? true,
+                        unique_filename: false,
                         resource_type: 'image',
                     },
                     (error, result) => {

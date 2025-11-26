@@ -73,7 +73,38 @@ const isBrazilian = (p: OffProduct): boolean => {
     return false
 }
 
-const mapOffToProduct = (p: OffProduct) => {
+type MappedProduct = {
+    name: string
+    brand: string | null
+    description: string | null
+    category: string | null
+    subcategory: null
+    sku: null
+    barcode: string
+    manufacturer: null
+    originCountry: string
+    quantityLabel: string | null
+    packageQuantity: null
+    packageUnit: null
+    netWeight: number | null
+    netWeightUnit: string | null
+    volume: number | null
+    volumeUnit: string | null
+    imageUrl: string | null
+    additionalImages: string[]
+    ingredients: string | null
+    allergens: string | null
+    isVegan: boolean
+    isVegetarian: boolean
+    isGlutenFree: boolean
+    tags: string[]
+    source: string
+    externalId: string | null
+    externalUrl: string | null
+    isActive: boolean
+}
+
+const mapOffToProduct = (p: OffProduct): MappedProduct | null => {
     const name = p.product_name_pt?.trim() || p.product_name?.trim() || p.product_name_en?.trim() || undefined
 
     const barcode = p.code?.trim()
@@ -184,11 +215,11 @@ const loadState = (): number => {
     return 1
 }
 
-const saveState = (lastLine: number) => {
+const saveState = (lastLine: number): void => {
     fs.writeFileSync(STATE_FILE, JSON.stringify({ lastLine }, null, 2), 'utf8')
 }
 
-const run = async () => {
+const run = async (): Promise<void> => {
     console.log('Lendo de:', INPUT_FILE)
 
     const stat = fs.statSync(INPUT_FILE)
@@ -209,7 +240,7 @@ const run = async () => {
     let insertedCount = 0
     let skippedNoNameOrBarcode = 0
 
-    let batch: any[] = []
+    let batch: MappedProduct[] = []
 
     console.log('Iniciando leitura linha a linha...')
 
@@ -236,15 +267,15 @@ const run = async () => {
 
         if (!line.trim()) continue
 
-        let raw: any
+        let raw: OffProduct | null = null
         try {
-            raw = JSON.parse(line)
+            raw = JSON.parse(line) as OffProduct
             parsedLines += 1
         } catch {
             continue
         }
 
-        if (!isBrazilian(raw)) {
+        if (!raw || !isBrazilian(raw)) {
             continue
         }
         brazilCandidates += 1

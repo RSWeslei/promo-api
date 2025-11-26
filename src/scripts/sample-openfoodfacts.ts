@@ -10,7 +10,7 @@ const OUTPUT_FILE = path.join(process.cwd(), 'openfoodfacts-sample-20.json')
 
 const MAX_ITEMS = 10
 
-const run = async () => {
+const run = async (): Promise<void> => {
     console.log('Lendo de:', INPUT_FILE)
 
     const stat = fs.statSync(INPUT_FILE)
@@ -29,7 +29,7 @@ const run = async () => {
         if (!line.trim()) continue
 
         try {
-            const obj = JSON.parse(line)
+            const obj: unknown = JSON.parse(line)
             items.push(obj)
             count += 1
         } catch {

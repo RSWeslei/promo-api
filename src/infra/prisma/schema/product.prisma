@@ -59,34 +59,42 @@ model Product {
   isGlutenFree Boolean? @map("is_gluten_free")
 
   tags Json? @map("tags")
+  gtinDetails Json? @map("gtin_details")
 
   source      String? @map("source")
   externalId  String? @map("external_id")
   externalUrl String? @map("external_url")
+
+  // Cosmos metadata
+  cosmosRaw Json? @map("cosmos_raw")
+  cosmosCreatedAt DateTime? @map("cosmos_created_at")
+  cosmosUpdatedAt DateTime? @map("cosmos_updated_at")
+
+  gpcEnglishDescription     String? @map("gpc_english_description")
+  gpcPortugueseDescription  String? @map("gpc_portuguese_description")
+
+  cestCode        String? @map("cest_code")
+  cestDescription String? @map("cest_description")
+  cestId          Int?    @map("cest_id")
+  cestParentId    Int?    @map("cest_parent_id")
 
   isActive Boolean @default(true) @map("is_active")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  images ProductImage[]
-
   @@map("product")
 }
 
-model ProductImage {
+model GpcSyncState {
   id String @id @default(cuid()) @map("id")
 
-  product   Product @relation(fields: [productId], references: [id])
-  productId String  @map("product_id")
-
-  url       String  @map("url") // URL da imagem
-  type      String? @map("type") // "front", "ingredients", "nutrition", "extra", etc.
-  sortOrder Int?    @map("sort_order") // pra ordenar as imagens se quiser
+  gpcCode String @unique @map("gpc_code")
+  lastPage Int? @map("last_page")
+  nextPage String? @map("next_page")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@index([productId], map: "product_image_product_id_idx")
-  @@map("product_image")
+  @@map("gpc_sync_state")
 }
